@@ -161,9 +161,19 @@ async function handleLogin(event) {
         
         if (response.ok && data.status === 'success') {
             appState.currentUser = data.data;
-            showToast('Logged in successfully!', 'success');
             document.getElementById('login-form').reset();
-            checkAuthentication();
+            showToast('Logged in successfully! Redirecting...', 'success');
+            
+            // Wait a moment for the toast to show, then redirect
+            setTimeout(async () => {
+                showMainApp();
+                try {
+                    await loadNotes('all');
+                    await loadLabels();
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                }
+            }, 500);
         } else {
             showToast(data.error || 'Login failed', 'error');
         }
@@ -208,10 +218,19 @@ async function handleRegister(event) {
         
         if (response.ok && data.status === 'success') {
             appState.currentUser = data.data;
-            showToast('Registration successful!', 'success');
             document.getElementById('register-form').reset();
-            toggleAuthForm();
-            checkAuthentication();
+            showToast('Registration successful! Loading your notebook...', 'success');
+            
+            // Wait a moment then show the app
+            setTimeout(async () => {
+                showMainApp();
+                try {
+                    await loadNotes('all');
+                    await loadLabels();
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                }
+            }, 500);
         } else {
             showToast(data.error || 'Registration failed', 'error');
         }

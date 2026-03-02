@@ -41,11 +41,13 @@ if (ENVIRONMENT === 'production') {
 }
 
 // Session Configuration for Hostinger
+@mkdir(__DIR__ . '/../tmp', 0755, true);
+@mkdir(__DIR__ . '/../tmp/sessions', 0755, true);
 ini_set('session.save_path', __DIR__ . '/../tmp/sessions');
 ini_set('session.gc_maxlifetime', 3600);
-ini_set('session.cookie_secure', 1); // HTTPS only
+ini_set('session.cookie_secure', 0); // Allow HTTP for development
 ini_set('session.cookie_httponly', 1); // No JavaScript access
-ini_set('session.cookie_samesite', 'Strict'); // CSRF protection
+ini_set('session.cookie_samesite', 'Lax'); // Allow forms
 
 // CORS Configuration
 header('Access-Control-Allow-Origin: ' . APP_URL);

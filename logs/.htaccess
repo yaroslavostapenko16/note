@@ -1,0 +1,4 @@
+# Protect logs directory
+<FilesMatch ".*">
+    Deny from all
+</FilesMatch>

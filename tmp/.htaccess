@@ -1,0 +1,9 @@
+# Protect tmp directory
+<FilesMatch ".*">
+    Deny from all
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^ - [L,F]
+</IfModule>
