@@ -1,17 +1,17 @@
 <?php
 /**
- * Database Schema and Initialization
- * Note Application
+ * Database Schema - Auto-initialized by api.php
+ * 
+ * This file is deprecated. All database initialization
+ * now happens automatically in api.php on first request.
+ * 
+ * No manual database setup is needed - tables are created
+ * and configured automatically.
  */
 
-require_once 'config.php';
+// Database is auto-initialized in api.php
+// Nothing to do here
 
-class Database {
-    private $conn;
-    
-    public function __construct() {
-        $this->conn = getDBConnection();
-    }
     
     /**
      * Initialize Database Tables

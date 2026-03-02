@@ -1,16 +1,14 @@
 <?php
 /**
- * Database Configuration
- * Note Application - Online Notebook
+ * Configuration File
+ * Note: Most configuration is in api.php for simplicity
  */
 
-// Database Configuration
-// For Hostinger: Use localhost as database host
-define('DB_HOST', 'localhost'); // Hostinger default
-define('DB_USER', 'u757840095_note2');
-define('DB_PASS', 'MB?EM6aTa7&M');
-define('DB_NAME', 'u757840095_note');
-define('DB_PORT', 3306); // Standard MySQL port
+// This file is kept for backward compatibility
+// All configuration is now in api.php
+
+?>
+
 
 // Application Configuration
 define('APP_NAME', 'Note - Online Notebook');
