@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow">
+    <meta name="canonical" content="https://note.websweos.com">
+    <title>Note - Online Notebook | Landing Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .container {
+            max-width: 800px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            font-size: 24px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        p {
+            font-size: 18px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+            text-align: left;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .feature h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .feature p {
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .footer {
+            margin-top: 60px;
+            opacity: 0.7;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 40px;
+            }
+
+            .subtitle {
+                font-size: 18px;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 Note</h1>
+        <h2 class="subtitle">Your Online Notebook</h2>
+        <p>Create, organize, and share your notes in the cloud. A simple yet powerful note-taking application inspired by Google Keep.</p>
+
+        <div class="features">
+            <div class="feature">
+                <h3>📝 Quick Notes</h3>
+                <p>Create notes in seconds with a clean and intuitive interface</p>
+            </div>
+            <div class="feature">
+                <h3>🏷️ Labels & Organization</h3>
+                <p>Organize your notes with custom labels and colors</p>
+            </div>
+            <div class="feature">
+                <h3>🔍 Powerful Search</h3>
+                <p>Find any note instantly with full-text search</p>
+            </div>
+            <div class="feature">
+                <h3>📌 Pin Important Notes</h3>
+                <p>Keep your most important notes at the top</p>
+            </div>
+            <div class="feature">
+                <h3>🔗 Share Easily</h3>
+                <p>Share notes with others via shareable links</p>
+            </div>
+            <div class="feature">
+                <h3>🌙 Dark Mode</h3>
+                <p>Easy on the eyes with built-in dark theme</p>
+            </div>
+        </div>
+
+        <div class="cta-buttons">
+            <button class="btn btn-primary" onclick="window.location.href='/app/index.php'">
+                Get Started →
+            </button>
+            <button class="btn btn-secondary" onclick="scrollToFeatures()">
+                Learn More
+            </button>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2026 Note Application. All rights reserved. | <a href="/privacy" style="color: inherit;">Privacy</a> | <a href="/terms" style="color: inherit;">Terms</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Redirect to app after 3 seconds (optional, user can click button)
+        function scrollToFeatures() {
+            document.querySelector('.features').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Check if user is logged in - if so, redirect to app
+        window.addEventListener('load', function() {
+            if (sessionStorage.getItem('user_logged_in')) {
+                window.location.href = '/app/index.php';
+            }
+        });
+    </script>
+</body>
+</html>

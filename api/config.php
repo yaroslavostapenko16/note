@@ -5,16 +5,18 @@
  */
 
 // Database Configuration
-define('DB_HOST', 'localhost');
+// For Hostinger: Use localhost as database host
+define('DB_HOST', 'localhost'); // Hostinger default
 define('DB_USER', 'u757840095_note2');
 define('DB_PASS', 'MB?EM6aTa7&M');
 define('DB_NAME', 'u757840095_note');
-define('DB_PORT', 3306);
+define('DB_PORT', 3306); // Standard MySQL port
 
 // Application Configuration
 define('APP_NAME', 'Note - Online Notebook');
-define('APP_URL', 'https://note.websweos.com');
+define('APP_URL', 'https://note.websweos.com'); // Change to your domain
 define('APP_VERSION', '1.0.0');
+define('ENVIRONMENT', 'production'); // Set to 'development' for debugging
 
 // Security Configuration
 define('SESSION_TIMEOUT', 3600);
@@ -25,9 +27,25 @@ define('ALLOWED_EXTENSIONS', ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'txt']);
 define('MAX_FILE_SIZE', 5242880); // 5MB
 
 // Error Reporting
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+// Production: Disable error display, log to file
+if (ENVIRONMENT === 'production') {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 0);
+    ini_set('display_startup_errors', 0);
+    ini_set('log_errors', 1);
+    ini_set('error_log', __DIR__ . '/../logs/php-errors.log');
+} else {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+}
+
+// Session Configuration for Hostinger
+ini_set('session.save_path', __DIR__ . '/../tmp/sessions');
+ini_set('session.gc_maxlifetime', 3600);
+ini_set('session.cookie_secure', 1); // HTTPS only
+ini_set('session.cookie_httponly', 1); // No JavaScript access
+ini_set('session.cookie_samesite', 'Strict'); // CSRF protection
 
 // CORS Configuration
 header('Access-Control-Allow-Origin: ' . APP_URL);
