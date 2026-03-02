@@ -1,0 +1,51 @@
+# Note Application - Robots.txt
+# File for search engine crawlers
+
+User-agent: *
+Allow: /
+Allow: /app/
+Allow: /assets/
+Disallow: /api/
+Disallow: /uploads/private/
+Disallow: /admin/
+Disallow: /*.json
+Disallow: /*?*sort=
+Disallow: /*?*offset=
+
+# Crawl-delay for all bots
+Crawl-delay: 1
+
+# Specific rules for Google Bot
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0.5
+
+# Specific rules for Bing Bot
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Block bad bots
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Allow: /
+
+User-agent: SemrushBot
+Allow: /
+
+# Sitemap location
+Sitemap: https://note.websweos.com/sitemap.xml
+Sitemap: https://note.websweos.com/sitemap-index.xml
+
+# Allow search engines to index CSS and JS
+User-agent: *
+Allow: /*.css
+Allow: /*.js
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.png
+Allow: /*.gif
+Allow: /*.svg
+Allow: /*.webp
