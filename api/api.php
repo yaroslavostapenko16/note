@@ -198,6 +198,19 @@ $endpoint = getEndpoint();
 $method = $_SERVER['REQUEST_METHOD'];
 $input = getInput();
 
+// Debug endpoint - shows what the API received
+if ($endpoint === 'debug' || $endpoint === 'test') {
+    apiSuccess([
+        'endpoint' => $endpoint,
+        'method' => $method,
+        'REQUEST_URI' => $_SERVER['REQUEST_URI'],
+        'GET' => $_GET,
+        'socket_family' => php_uname(),
+        'db_status' => 'configured',
+        'time' => date('Y-m-d H:i:s')
+    ], 'Debug info');
+}
+
 // Status check
 if ($endpoint === '' || $endpoint === 'status') {
     apiSuccess(['status' => 'working', 'time' => date('Y-m-d H:i:s')]);
