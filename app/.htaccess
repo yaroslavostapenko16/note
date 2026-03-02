@@ -1,0 +1,14 @@
+# App Directory Configuration
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /app/
+    
+    # Allow real files and directories
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+    
+    # Rewrite to index.php
+    RewriteRule ^(.*)$ index.php [L]
+</IfModule>

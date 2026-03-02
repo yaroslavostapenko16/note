@@ -1,29 +1,31 @@
 # Apache Configuration for Note Application
+# Optimized for Hostinger
 
 # Enable mod_rewrite
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
     
-    # Allow direct access to API
-    RewriteCond %{REQUEST_URI} ^/api/ [OR]
-    RewriteCond %{REQUEST_URI} ^/api\.php
-    RewriteRule ^(.*)$ - [L]
-    
-    # Allow access to existing files
+    # Do not rewrite actual files and directories
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
-    RewriteRule ^(.*)$ - [L]
+    RewriteRule ^ - [L]
     
-    # Redirect API requests to api.php
-    RewriteCond %{REQUEST_URI} ^/api/
-    RewriteRule ^api/(.*)$ /api/api.php?endpoint=$1 [QSA,L]
+    # Handle /api/ requests
+    RewriteRule ^api/(.*)$ api/api.php?endpoint=$1 [QSA,L]
     
-    # Redirect app requests to index.php
-    RewriteCond %{REQUEST_URI} !^/api/
+    # Handle /app requests
+    RewriteCond %{REQUEST_URI} ^/app
+    RewriteRule ^app/(.*)$ app/index.php [QSA,L]
+    
+    # Redirect /app to /app/
+    RewriteRule ^app$ /app/ [R=301,L]
+    
+    # Root requests to landing page or app
+    RewriteCond %{REQUEST_URI} !^/(robots\.txt|sitemap\.xml|api|assets|app|uploads|api\.php)
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ /app/index.php [QSA,L]
+    RewriteRule ^(.*)$ index.html [L]
 </IfModule>
 
 # Set correct MIME types

@@ -1,0 +1,13 @@
+# API Directory Configuration
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /api/
+    
+    # Allow real files
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+    
+    # Route all API requests to api.php
+    RewriteRule ^(.*)$ api.php?endpoint=$1 [QSA,L]
+</IfModule>
