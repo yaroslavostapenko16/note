@@ -12,11 +12,8 @@
 // Database is auto-initialized in api.php
 // Nothing to do here
 
-    
-    /**
-     * Initialize Database Tables
-     */
-    public function initDatabase() {
+?>
+
         try {
             // Users Table
             $userTable = "CREATE TABLE IF NOT EXISTS users (

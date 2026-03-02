@@ -148,8 +148,15 @@ function apiSuccess($data, $message = 'Success') {
  * Get request endpoint
  */
 function getEndpoint() {
+    // First check if endpoint was passed as query param (from .htaccess rewrite)
+    if (isset($_GET['endpoint']) && !empty($_GET['endpoint'])) {
+        return trim($_GET['endpoint'], '/');
+    }
+    
+    // Parse from REQUEST_URI
     $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     $path = str_replace('/api/', '', $path);
+    $path = str_replace('/public_html', '', $path);
     return trim($path, '/');
 }
 

@@ -1,4 +1,5 @@
 # API Directory Configuration
+# Root .htaccess already handles routing to this directory
 
 # Disable directory listing
 <FilesMatch "^$">
@@ -11,21 +12,14 @@
     Allow from all
 </Files>
 
-# Allow config files to be protected
+# Protect config files
 <FilesMatch "^(config|database|test)\.php$">
     Deny from all
 </FilesMatch>
 
-# Rewrite rules
+# Disable rewriting - root .htaccess handles it
 <IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteBase /api/
-    
-    # Allow real files
-    RewriteCond %{REQUEST_FILENAME} -f
-    RewriteRule ^ - [L]
-    
-    # Route everything else to api.php
-    RewriteRule ^(.*)$ api.php?endpoint=$1 [QSA,L]
+    RewriteEngine Off
 </IfModule>
+
 
