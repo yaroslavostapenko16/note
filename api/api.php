@@ -24,6 +24,12 @@ class NoteAPI {
      * Get API Endpoint
      */
     private function getEndpoint() {
+        // First check if endpoint is passed as query parameter (from .htaccess rewrite)
+        if (isset($_GET['endpoint']) && !empty($_GET['endpoint'])) {
+            return trim($_GET['endpoint'], '/');
+        }
+        
+        // Fallback to parse REQUEST_URI
         $request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $request = str_replace('/api/', '', $request);
         return trim($request, '/');

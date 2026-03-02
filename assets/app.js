@@ -1,9 +1,11 @@
 /**
  * Note Application - Frontend JavaScript
+ * Complete rewrite with correct API endpoints for Hostinger
  */
 
 // API Configuration
-const API_BASE = '/api/api.php';
+const API_BASE = '/api';
+
 const APP_CONFIG = {
     maxNoteLength: 50000,
     maxTitleLength: 500,
@@ -56,7 +58,7 @@ function setupEventListeners() {
     document.addEventListener('click', function(e) {
         const menu = document.getElementById('user-menu');
         const btn = document.querySelector('.btn-icon');
-        if (!btn.contains(e.target) && !menu.contains(e.target)) {
+        if (btn && menu && !btn.contains(e.target) && !menu.contains(e.target)) {
             menu.style.display = 'none';
         }
     });
@@ -84,7 +86,7 @@ function setupEventListeners() {
  */
 async function checkAuthentication() {
     try {
-        const response = await fetch(`${API_BASE}?endpoint=user`, {
+        const response = await fetch(`${API_BASE}/user`, {
             method: 'GET',
             credentials: 'include'
         });
@@ -146,7 +148,7 @@ async function handleLogin(event) {
     }
     
     try {
-        const response = await fetch(`${API_BASE}?endpoint=auth/login`, {
+        const response = await fetch(`${API_BASE}/auth/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -160,6 +162,7 @@ async function handleLogin(event) {
         if (response.ok && data.status === 'success') {
             appState.currentUser = data.data;
             showToast('Logged in successfully!', 'success');
+            document.getElementById('login-form').reset();
             checkAuthentication();
         } else {
             showToast(data.error || 'Login failed', 'error');
@@ -192,7 +195,7 @@ async function handleRegister(event) {
     }
     
     try {
-        const response = await fetch(`${API_BASE}?endpoint=auth/register`, {
+        const response = await fetch(`${API_BASE}/auth/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -207,6 +210,7 @@ async function handleRegister(event) {
             appState.currentUser = data.data;
             showToast('Registration successful!', 'success');
             document.getElementById('register-form').reset();
+            toggleAuthForm();
             checkAuthentication();
         } else {
             showToast(data.error || 'Registration failed', 'error');
@@ -222,7 +226,7 @@ async function handleRegister(event) {
  */
 async function logoutUser() {
     try {
-        await fetch(`${API_BASE}?endpoint=auth/logout`, {
+        await fetch(`${API_BASE}/auth/logout`, {
             method: 'POST',
             credentials: 'include'
         });
@@ -234,6 +238,7 @@ async function logoutUser() {
         checkAuthentication();
     } catch (error) {
         console.error('Logout error:', error);
+        showToast('Error logging out', 'error');
     }
 }
 
@@ -256,7 +261,8 @@ async function loadNotes(view = 'all') {
         document.querySelectorAll('.sidebar-item').forEach(item => {
             item.classList.remove('active');
         });
-        document.querySelector(`[data-view="${view}"]`)?.classList.add('active');
+        const viewElement = document.querySelector(`[data-view="${view}"]`);
+        if (viewElement) viewElement.classList.add('active');
         
         const params = new URLSearchParams();
         
@@ -271,7 +277,7 @@ async function loadNotes(view = 'all') {
                 params.append('sort', 'created_at');
         }
         
-        const response = await fetch(`${API_BASE}?endpoint=notes&${params.toString()}`, {
+        const response = await fetch(`${API_BASE}/notes?${params.toString()}`, {
             method: 'GET',
             credentials: 'include'
         });
@@ -322,23 +328,20 @@ function renderNotes(notes) {
  */
 async function createNewNote() {
     const title = document.getElementById('new-note-title').value.trim();
-    const content = '';
     
-    if (!title && !content) {
+    if (!title) {
         showToast('Please enter a note title', 'info');
         return;
     }
     
     try {
-        const response = await fetch(`${API_BASE}?endpoint=notes`, {
+        const response = await fetch(`${API_BASE}/notes`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
             body: JSON.stringify({ 
-                title: title || 'Untitled Note',
-                content: content 
+                title: title,
+                content: '' 
             })
         });
         
@@ -388,7 +391,8 @@ function openNoteModal() {
     const modal = document.getElementById('note-modal');
     modal.style.display = 'flex';
     modal.classList.add('active');
-    document.getElementById('modal-note-content').focus();
+    const content = document.getElementById('modal-note-content');
+    if (content) content.focus();
 }
 
 /**
@@ -416,7 +420,7 @@ async function saveCurrentNote() {
     }
     
     try {
-        const response = await fetch(`${API_BASE}?endpoint=notes`, {
+        const response = await fetch(`${API_BASE}/notes`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -454,7 +458,7 @@ async function deleteCurrentNote() {
     if (!confirm('Are you sure you want to delete this note?')) return;
     
     try {
-        const response = await fetch(`${API_BASE}?endpoint=notes`, {
+        const response = await fetch(`${API_BASE}/notes`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -490,7 +494,7 @@ async function togglePinNote(noteId, event) {
     if (!note) return;
     
     try {
-        const response = await fetch(`${API_BASE}?endpoint=notes`, {
+        const response = await fetch(`${API_BASE}/notes`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -521,8 +525,10 @@ function changeNoteColor(color) {
     // Update color picker UI
     document.querySelectorAll('.color-option').forEach(opt => {
         opt.classList.remove('selected');
+        if (opt.style.backgroundColor === color) {
+            opt.classList.add('selected');
+        }
     });
-    event.target.classList.add('selected');
 }
 
 /**
@@ -532,7 +538,7 @@ async function shareCurrentNote() {
     if (!appState.currentNote) return;
     
     try {
-        const response = await fetch(`${API_BASE}?endpoint=share`, {
+        const response = await fetch(`${API_BASE}/share`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -580,7 +586,7 @@ async function searchNotes() {
     }
     
     try {
-        const response = await fetch(`${API_BASE}?endpoint=search&q=${encodeURIComponent(query)}`, {
+        const response = await fetch(`${API_BASE}/search?q=${encodeURIComponent(query)}`, {
             method: 'GET',
             credentials: 'include'
         });
@@ -601,7 +607,7 @@ async function searchNotes() {
  */
 async function loadLabels() {
     try {
-        const response = await fetch(`${API_BASE}?endpoint=labels`, {
+        const response = await fetch(`${API_BASE}/labels`, {
             method: 'GET',
             credentials: 'include'
         });
@@ -641,7 +647,8 @@ function renderLabels(labels) {
 function openLabelDialog() {
     document.getElementById('label-modal').style.display = 'flex';
     document.getElementById('label-modal').classList.add('active');
-    document.getElementById('label-name').focus();
+    const input = document.getElementById('label-name');
+    if (input) input.focus();
 }
 
 /**
@@ -663,7 +670,9 @@ function selectLabelColor(color) {
     document.querySelectorAll('.modal-small .color-option').forEach(opt => {
         opt.classList.remove('selected');
     });
-    event.target.classList.add('selected');
+    if (event && event.target) {
+        event.target.classList.add('selected');
+    }
 }
 
 /**
@@ -679,7 +688,7 @@ async function createLabel() {
     }
     
     try {
-        const response = await fetch(`${API_BASE}?endpoint=labels`, {
+        const response = await fetch(`${API_BASE}/labels`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -716,7 +725,7 @@ async function filterByLabel(labelId) {
  */
 async function openProfile() {
     try {
-        const response = await fetch(`${API_BASE}?endpoint=user`, {
+        const response = await fetch(`${API_BASE}/user`, {
             method: 'GET',
             credentials: 'include'
         });
@@ -734,6 +743,7 @@ async function openProfile() {
         }
     } catch (error) {
         console.error('Open profile error:', error);
+        showToast('Error loading profile', 'error');
     }
 }
 
@@ -755,7 +765,7 @@ async function saveProfile() {
     const theme = document.getElementById('profile-theme').value;
     
     try {
-        const response = await fetch(`${API_BASE}?endpoint=user`, {
+        const response = await fetch(`${API_BASE}/user`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -796,6 +806,8 @@ function loadUserPreferences() {
  */
 function showToast(message, type = 'info') {
     const toast = document.getElementById('toast');
+    if (!toast) return;
+    
     toast.textContent = message;
     toast.className = `toast show ${type}`;
     
