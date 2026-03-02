@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Note App - API Test</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header {
+            background: #667eea;
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .test-item {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .pending { background: #fff3cd; color: #856404; }
+        .status-icon {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover { background: #5568d3; }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 Note App - API Diagnostic Test</h1>
+            <p>Test API endpoints and configuration</p>
+        </div>
+
+        <div class="test-section">
+            <h2>API Status</h2>
+            <div id="api-status"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Quick Tests</h2>
+            <button onclick="testStatus()">Test /api/status</button>
+            <button onclick="testDebug()">Test /api/debug</button>
+            <button onclick="clearTests()">Clear Results</button>
+        </div>
+
+        <div class="test-section">
+            <h2>Authentication Tests</h2>
+            <button onclick="testRegister()">Register Test User</button>
+            <button onclick="testLogin()">Login Test User</button>
+            <button onclick="testUser()">Get User Profile</button>
+            <button onclick="testLogout()">Logout</button>
+            <div id="auth-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Note Operations</h2>
+            <button onclick="testCreateNote()">Create Test Note</button>
+            <button onclick="testGetNotes()">Get All Notes</button>
+            <button onclick="testSearch()">Search Notes</button>
+            <div id="notes-results"></div>
+        </div>
+
+        <div class="test-section" id="results">
+            <h2>Results</h2>
+            <div id="test-results"></div>
+        </div>
+    </div>
+
+    <script>
+        const API = '/api';
+
+        function addResult(message, type = 'info') {
+            const results = document.getElementById('test-results');
+            const item = document.createElement('div');
+            item.className = `test-item ${type}`;
+            
+            let icon = 'ℹ️';
+            if (type === 'success') icon = '✅';
+            if (type === 'error') icon = '❌';
+            if (type === 'pending') icon = '⏳';
+            
+            item.innerHTML = `
+                <span><span class="status-icon">${icon}</span> ${message}</span>
+            `;
+            results.insertBefore(item, results.firstChild);
+        }
+
+        function clearTests() {
+            document.getElementById('test-results').innerHTML = '';
+        }
+
+        async function testAPI(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+
+                const response = await fetch(`${API}${endpoint}`, options);
+                const result = await response.json();
+                
+                return {
+                    success: response.ok,
+                    status: response.status,
+                    data: result
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    status: 0,
+                    error: error.message
+                };
+            }
+        }
+
+        async function testStatus() {
+            addResult('Testing /api/status...', 'pending');
+            const result = await testAPI('/status');
+            
+            if (result.success) {
+                addResult(`✓ Status: ${result.data.status} at ${result.data.time}`, 'success');
+            } else {
+                addResult(`✗ Status failed: ${result.error || result.status}`, 'error');
+            }
+        }
+
+        async function testDebug() {
+            addResult('Testing /api/debug...', 'pending');
+            const result = await testAPI('/debug');
+            
+            if (result.success) {
+                addResult(`✓ Debug info received. Endpoint: ${result.data.data.endpoint}`, 'success');
+                console.log('Debug data:', result.data.data);
+            } else {
+                addResult(`✗ Debug failed: ${result.error || result.status}`, 'error');
+            }
+        }
+
+        async function testRegister() {
+            addResult('Registering test user...', 'pending');
+            const data = {
+                username: 'testuser_' + Date.now(),
+                email: 'test_' + Date.now() + '@example.com',
+                password: 'password123',
+                full_name: 'Test User'
+            };
+            
+            const result = await testAPI('/auth/register', 'POST', data);
+            
+            if (result.success && result.data.status === 'success') {
+                addResult(`✓ Registered: ${result.data.data.username} (${result.data.data.email})`, 'success');
+                localStorage.setItem('testEmail', data.email);
+                localStorage.setItem('testPassword', data.password);
+            } else {
+                addResult(`✗ Registration failed: ${result.data?.error || 'Unknown error'}`, 'error');
+            }
+        }
+
+        async function testLogin() {
+            addResult('Testing login...', 'pending');
+            const email = localStorage.getItem('testEmail') || 'test@example.com';
+            const password = localStorage.getItem('testPassword') || 'password123';
+            
+            const result = await testAPI('/auth/login', 'POST', { email, password });
+            
+            if (result.success && result.data.status === 'success') {
+                addResult(`✓ Logged in as: ${result.data.data.username}`, 'success');
+            } else {
+                addResult(`✗ Login failed: ${result.data?.error || result.error}`, 'error');
+            }
+        }
+
+        async function testUser() {
+            addResult('Getting user profile...', 'pending');
+            const result = await testAPI('/user', 'GET');
+            
+            if (result.success && result.data.status === 'success') {
+                addResult(`✓ User: ${result.data.data.username} (${result.data.data.email})`, 'success');
+            } else {
+                addResult(`✗ Get user failed: ${result.data?.error || 'Not authenticated'}`, 'error');
+            }
+        }
+
+        async function testLogout() {
+            addResult('Logging out...', 'pending');
+            const result = await testAPI('/auth/logout', 'POST');
+            
+            if (result.success) {
+                addResult('✓ Logged out successfully', 'success');
+            } else {
+                addResult('✗ Logout failed', 'error');
+            }
+        }
+
+        async function testCreateNote() {
+            addResult('Creating test note...', 'pending');
+            const data = {
+                title: 'Test Note ' + new Date().toLocaleTimeString(),
+                content: 'This is a test note created at ' + new Date().toISOString()
+            };
+            
+            const result = await testAPI('/notes', 'POST', data);
+            
+            if (result.success && result.data.status === 'success') {
+                addResult(`✓ Note created: ${result.data.data.title}`, 'success');
+                localStorage.setItem('testNoteId', result.data.data.note_id);
+            } else {
+                addResult(`✗ Create note failed: ${result.data?.error || 'Not authenticated'}`, 'error');
+            }
+        }
+
+        async function testGetNotes() {
+            addResult('Getting notes...', 'pending');
+            const result = await testAPI('/notes', 'GET');
+            
+            if (result.success && result.data.status === 'success') {
+                addResult(`✓ Retrieved ${result.data.data.length} notes`, 'success');
+            } else {
+                addResult(`✗ Get notes failed: ${result.data?.error || 'Not authenticated'}`, 'error');
+            }
+        }
+
+        async function testSearch() {
+            addResult('Searching notes...', 'pending');
+            const result = await testAPI('/search?q=test', 'GET');
+            
+            if (result.success && result.data.status === 'success') {
+                addResult(`✓ Search completed: ${result.data.data.length} results`, 'success');
+            } else {
+                addResult(`✗ Search failed: ${result.data?.error || 'Not authenticated'}`, 'error');
+            }
+        }
+
+        // Auto-test on load
+        window.addEventListener('load', () => {
+            testStatus();
+        });
+    </script>
+</body>
+</html>
